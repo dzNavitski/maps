@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+	<style type="text/css" media="screen">
+		#map {
+			width: 650px;
+			height: 600px;
+			margin: 150px auto;
+		}
+
+		.leaflet-image-layer {
+			z-index: 99;
+		}
+
+		.leaflet-container {
+		    background: rgba(181,233,255,1);
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script type="text/javascript" charset="utf-8" >
+		var map = L.map('map', {
+			    center: [47, 2.5],
+			    zoom: 5.4,
+			    minZoom: 5.4,
+			    maxBounds: [[39.4700000, -9.9600000], [53.6700000, 14.6400000]]
+			});
+		var imageUrl = 'https://meteo.pleinchamp.com/mg-swf/radar/fr1x1/radar_prog-fr_20151207_0915.png?antiCache=6763141834';
+    	var imageBounds = [[39.4700000, -9.9600000], [53.6700000, 14.6400000]];
+
+    	map.setMaxBounds([
+		    [39.4700000, -9.9600000],
+		    [53.6700000, 14.6400000]
+		]);
+
+		var francePoly = L.geoJson(null, {
+			style: franceStyle
+		});
+		var franceInnerBoundaries = L.geoJson(null, {
+			style: franceBoundariesStyle
+		});
+
+		var neibBoundaries = L.geoJson(null, {
+			style: neibBoundariesStyle
+		});
+		var neibPoly = L.geoJson(null, {
+			style: neibPolyStyle
+		});
+		var waterLine = L.geoJson(null, {
+			style: waterLineStyle
+		});
+		var waterPoly = L.geoJson(null, {
+			style: waterPolyStyle
+		});
+		var road = L.geoJson(null, {
+			style: roadStyle
+		});
+
+
+		omnivore.topojson('data/topojson/poly.topojson', null, francePoly).addTo(map);
+
+		omnivore.topojson('data/topojson/admin1.topojson', null, franceInnerBoundaries).addTo(map);
+
+		omnivore.topojson('data/topojson/admin2.topojson', null, franceInnerBoundaries).addTo(map);
+
+		omnivore.topojson('data/topojson/neighine.topojson', null, neibBoundaries).addTo(map);
+
+		omnivore.topojson('data/topojson/neighpoly.topojson', null, neibPoly).addTo(map);
+
+		omnivore.topojson('data/topojson/water_line.topojson', null, waterLine).addTo(map);
+
+		omnivore.topojson('data/topojson/water_poly.topojson', null, waterPoly).addTo(map);
+
+		omnivore.topojson('data/topojson/road.topojson', null, road).addTo(map);
+
+		var a = L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+		a.bringToFront();
+
+		function franceStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(79,79,79,1)',
+				fill: true,
+				fillColor: 'rgba(117,223,148,1)',
+				fillOpacity: 1,
+				opacity: 1
+			};
+		}
+
+		function franceBoundariesStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(138,138,138,1)',
+				opacity: 1
+			};
+		}
+
+		function neibBoundariesStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(79,79,79,1)',
+				opacity: 1
+			};
+		}
+
+		function neibPolyStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(79,79,79,1)',
+				fill: true,
+				fillColor: 'rgba(194,252,220,1)',
+				fillOpacity: 1,
+				opacity: 1
+			};
+		}
+
+		function waterLineStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(20,187,252,1)',
+				fill: false
+			};
+		}
+
+		function waterPolyStyle(feature) {
+			return {
+				stroke: false,
+				fill: true,
+				fillColor: 'rgba(20,187,252,1)',
+				fillOpacity: 1,
+				opacity: 1
+			};
+		}
+
+		function roadStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1.5,
+				color: 'rgba(79,79,79,1)',
+				fill: false
+			};
+		}
+	</script>
+</body>
+</html>
