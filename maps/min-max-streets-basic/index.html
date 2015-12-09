@@ -5,12 +5,17 @@
 	<title>Document</title>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 
 	<style type="text/css" media="screen">
 		#map {
 			width: 650px;
 			height: 600px;
 			margin: 150px auto;
+		}
+
+		.leaflet-image-layer {
+			z-index: 99;
 		}
 	</style>
 </head>
@@ -27,13 +32,17 @@
 		var imageUrl = 'https://meteo.pleinchamp.com/mg-swf/radar/fr1x1/radar-fr_20151209_0930.png';
     	var imageBounds = [[39.4700000, -9.9600000], [53.6700000, 14.6400000]];
 
+    	var francePoly = L.geoJson(null, {
+			style: franceStyle
+		});
+
     	map.setMaxBounds([
 		    [39.4700000, -9.9600000],
 		    [53.6700000, 14.6400000]
 		]);
 
 		L.tileLayer('http://api.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGltYTU1MiIsImEiOiJjaWhvZXY4MGswMGpjdHhtNDVxcTk4anAwIn0.aZjktBs4YBLFPCp2T5IgQw', {
-		    maxZoom: 7,
+		    maxZoom: 6,
 		    accessToken: 'pk.eyJ1IjoiZGltYTU1MiIsImEiOiJjaWhvZXY4MGswMGpjdHhtNDVxcTk4anAwIn0.aZjktBs4YBLFPCp2T5IgQw'
 		}).addTo(map);
 
@@ -44,6 +53,32 @@
 		}).addTo(map);
 
 		L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+		omnivore.topojson('data/topojson/poly.topojson', null, francePoly).addTo(map);
+
+		function franceStyle(feature) {
+			return {
+				stroke: true,
+				weight: 1,
+				color: 'rgba(79,79,79,0.5)',
+				fill: true,
+				fillColor: 'rgba(117,223,148,1)',
+				fillOpacity: 0.3,
+				opacity: 1
+			};
+		}
+
+		map.on('zoomend', onZoomend);
+
+		function onZoomend(){
+		    if (map.getZoom() >= 7) {
+		     	map.removeLayer(francePoly);
+		    }
+
+		    if (map.getZoom() < 7) {
+		    	map.addLayer(francePoly);
+		  	};
+		};
 	</script>
 </body>
 </html>
