@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+	<style type="text/css" media="screen">
+		#map {
+			width: 650px;
+			height: 600px;
+			margin: 150px auto;
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script type="text/javascript" charset="utf-8" >
+		var map = L.map('map', {
+			    center: [47, 2.5],
+			    zoom: 5,
+			    minZoom: 5,
+			    maxBounds: [[39.4700000, -9.9600000], [53.6700000, 14.6400000]]
+			});
+		var imageUrl = 'https://meteo.pleinchamp.com/mg-swf/radar/fr1x1/radar-fr_20151209_0930.png';
+    	var imageBounds = [[39.4700000, -9.9600000], [53.6700000, 14.6400000]];
+
+
+		L.tileLayer('http://api.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGltYTU1MiIsImEiOiJjaWhvZXY4MGswMGpjdHhtNDVxcTk4anAwIn0.aZjktBs4YBLFPCp2T5IgQw', {
+		    maxZoom: 7,
+		    accessToken: 'pk.eyJ1IjoiZGltYTU1MiIsImEiOiJjaWhvZXY4MGswMGpjdHhtNDVxcTk4anAwIn0.aZjktBs4YBLFPCp2T5IgQw'
+		}).addTo(map);
+
+		L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+			minZoom: 7,
+		}).addTo(map);
+
+		L.imageOverlay(imageUrl, imageBounds).addTo(map);
+	</script>
+</body>
+</html>
