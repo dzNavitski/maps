@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.11.2/ol.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.11.2/ol.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <style type="text/css" media="screen">
+    #map {
+      width: 650px;
+      height: 600px;
+      margin: 150px auto;
+    }
+    .marker {
+      width: 10px;
+      height: 10px;
+      position: relative;
+      cursor: pointer;
+      border-radius: 50%;
+      background: #ff6500;
+    }
+    .marker-content {
+      position: absolute;
+      top: -35%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      text-align: center;
+      user-select: none;
+    }
+    .marker-title {
+      margin: 0;
+      padding: 2px 3px;
+      font-family: Arial;
+      font-size: 11px;
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.75);
+    }
+    .marker-measurement {
+      display: inline-block;
+      padding: 3px;
+      font-family: Arial;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      color: #fff;
+      text-align: center;
+      background: rgb(54, 172, 220);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script type="text/javascript" charset="utf-8">
+    var myDom = {
+      points: {
+        text: 'normal',
+        align: 'center',
+        baseline: 'top',
+        size: '20px',
+        offsetY: -25,
+        color: '#000',
+        outline: '#ffffff',
+        outlineWidth: 3
+      },
+    };
+
+    var overlays = [];
+
+    function getText(feature, resolution, dom) {
+      var type = dom.text;
+      var text = feature.get('name');
+
+      return text;
+    };
+
+    function createPointStyleFunction() {
+      return function(feature, resolution) {
+        var style = new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({
+              color: '#FF6500'
+            }),
+            stroke: new ol.style.Stroke({
+              color: '#FF6500',
+              width: 1
+            })
+          }),
+          text: createTextStyle(feature, resolution, myDom.points)
+        });
+
+        return [style];
+      };
+    };
+
+    function createTextStyle(feature, resolution, dom) {
+      var align = dom.align;
+      var baseline = dom.baseline;
+      var size = dom.size;
+      var offsetY = parseInt(dom.offsetY, 10);
+      var fillColor = dom.color;
+      var outlineColor = dom.outline;
+      var outlineWidth = parseInt(dom.outlineWidth, 10);
+
+      return new ol.style.Text({
+        textAlign: align,
+        textBaseline: baseline,
+        font: "12px Arial",
+        text: getText(feature, resolution, dom),
+        fill: new ol.style.Fill({
+          color: fillColor
+        }),
+        stroke: new ol.style.Stroke({
+          color: outlineColor,
+          width: outlineWidth
+        }),
+        offsetY: offsetY
+      });
+    };
+
+
+
+    function boderStyles() {
+      return new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#5a5a5a',
+          width: 2
+        })
+      });
+    }
+
+    var vectorPoints = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/geojson/point-samples.geojson',
+        format: new ol.format.GeoJSON()
+      }),
+      style: createPointStyleFunction()
+    });
+
+    var borderRegions = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/geojson/admin1.geojson',
+        format: new ol.format.GeoJSON()
+      }),
+      style: boderStyles(),
+      renderBuffer: '600'
+    });
+
+    var france = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/geojson/poly.geojson',
+        format: new ol.format.GeoJSON()
+      }),
+      style: boderStyles(),
+      renderBuffer: '600'
+    });
+
+    var borderDepartaments = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/geojson/admin2.geojson',
+        format: new ol.format.GeoJSON()
+      }),
+      style: boderStyles(),
+      renderBuffer: '600'
+    });
+
+
+    var map = new ol.Map({
+      target: 'map',
+      renderer: 'dom',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM({
+          	url: '//{a-c}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png',
+            attributions: [
+              new ol.Attribution({
+                html: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              })
+            ],
+          	crossOrigin: null
+          })
+        }),
+        borderRegions,
+        borderDepartaments,
+        france
+      ],
+      view: new ol.View({
+        center: ol.proj.fromLonLat([6.1962890625, 44.65133484083595]),
+        zoom: 9,
+        maxZoom: 9,
+        minZoom: 7
+      })
+    });
+
+    $.get("/data/geojson/point-samples.geojson", function(data) {
+      var data = JSON.parse(data);
+      overlays = data.features.map(function(feature) {
+        var marker = new ol.Overlay({
+          position: ol.proj.fromLonLat(feature.geometry.coordinates),
+          positioning: 'center-center',
+          element: $('<div class="marker" title="' + feature.properties.name + '"> <div class="marker-content"> <div class="marker-measurement"> 10</div> <p class="marker-title">' + feature.properties.name + '</p></div>   </div>')
+            .on('click', function(e) {
+              var title = $(this).find('.marker-title');
+              title.toggle();
+            }),
+          stopEvent: false
+        });
+
+        map.addOverlay(marker);
+
+        return marker;
+      });
+    });
+
+    function clearMakers(argument) {
+		overlays.forEach(function(layer) {
+        	map.removeOverlay(layer);
+        });
+    }
+  </script>
+</body>
+
+</html>
