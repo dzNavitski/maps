@@ -192,7 +192,6 @@
     });
 
     $.get("data/geojson/point-samples.geojson", function(data) {
-      var data = JSON.parse(data);
       overlays = data.features.map(function(feature) {
         var marker = new ol.Overlay({
           position: ol.proj.fromLonLat(feature.geometry.coordinates),
