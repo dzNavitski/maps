@@ -12,6 +12,7 @@
       width: 650px;
       height: 600px;
       margin: 150px auto;
+      cursor: pointer;
     }
     .marker {
       width: 10px;
@@ -126,6 +127,28 @@
     function boderStyles() {
       return new ol.style.Style({
         stroke: new ol.style.Stroke({
+          color: '#969696',
+          width: 1
+        })
+      });
+    }
+
+    function highlightStyle() {
+      return new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#5a5a5a',
+          width: 2
+        }),
+        fill: new ol.style.Fill({
+          color: 'transparent'
+        }),
+        zIndex: 1
+      });
+    }
+
+    function selectStyles() {
+      return new ol.style.Style({
+        stroke: new ol.style.Stroke({
           color: '#5a5a5a',
           width: 2
         })
@@ -134,35 +157,19 @@
 
     var vectorPoints = new ol.layer.Vector({
       source: new ol.source.Vector({
-        url: '/data/geojson/point-samples.geojson',
+        url: 'data/geojson/point-samples.geojson',
         format: new ol.format.GeoJSON()
       }),
       style: createPointStyleFunction()
     });
 
-    var borderRegions = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        url: 'data/geojson/admin1.geojson',
-        format: new ol.format.GeoJSON()
-      }),
-      style: boderStyles(),
-      renderBuffer: '600'
+    var franceSource = new ol.source.Vector({
+      url: 'data/geojson/france.geojson',
+      format: new ol.format.GeoJSON()
     });
 
     var france = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        url: 'data/geojson/poly.geojson',
-        format: new ol.format.GeoJSON()
-      }),
-      style: boderStyles(),
-      renderBuffer: '600'
-    });
-
-    var borderDepartaments = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        url: 'data/geojson/admin2.geojson',
-        format: new ol.format.GeoJSON()
-      }),
+      source: franceSource,
       style: boderStyles(),
       renderBuffer: '600'
     });
@@ -179,41 +186,111 @@
             ]
           })
         }),
-        borderRegions,
-        borderDepartaments,
         france
       ],
       view: new ol.View({
-        center: ol.proj.fromLonLat([6.1962890625, 44.65133484083595]),
-        zoom: 9,
+        center: ol.proj.fromLonLat([2.5, 47]),
+        zoom: 7,
         maxZoom: 9,
         minZoom: 7
       })
     });
 
-    $.get("data/geojson/point-samples.geojson", function(data) {
-      overlays = data.features.map(function(feature) {
-        var marker = new ol.Overlay({
-          position: ol.proj.fromLonLat(feature.geometry.coordinates),
-          positioning: 'center-center',
-          element: $('<div class="marker" title="' + feature.properties.name + '"> <div class="marker-content"> <div class="marker-measurement"> 10</div> <p class="marker-title">' + feature.properties.name + '</p></div>   </div>')
-            .on('click', function(e) {
-              var title = $(this).find('.marker-title');
-              title.toggle();
-            }),
-          stopEvent: false
-        });
+    var selectHover = new ol.interaction.Select({
+      multi: false,
+      style: highlightStyle()
+    });
 
-        map.addOverlay(marker);
+    map.addInteraction(selectHover);
 
-        return marker;
+    var selectedHoverFeatures = selectHover.getFeatures();
+
+
+    var select = new ol.interaction.Select({
+      multi: false,
+      style: selectStyles()
+    });
+    map.addInteraction(select);
+    var selectedFeatures = select.getFeatures();
+
+    var layerId = null;
+    select.on('select', function(evt) {
+      selectedHoverFeatures.clear();
+      if (evt.selected.length) {
+        clearMakers();
+        var selected = evt.selected[0];
+        var extent = selected.getGeometry().getExtent();
+        var id = selected.get('ID_TILE');
+        layerId = id;
+        map.getView().fit(extent, map.getSize());
+        getPoints(id);
+      }
+    });
+
+    map.on('pointermove', function(browserEvent) {
+      // first clear any existing features in the overlay
+      selectedHoverFeatures.clear();
+      var pixel = browserEvent.pixel;
+      // then for each feature at the mouse position ...
+      map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+        // check the layer property, if it is not set then it means we
+        // are over an OverlayFeature and we can ignore this feature
+        if (!layer || feature.get('ID_TILE') === layerId) {
+          return;
+        }
+
+        selectedHoverFeatures.push(feature);
       });
     });
 
-    function clearMakers(argument) {
-		overlays.forEach(function(layer) {
-        	map.removeOverlay(layer);
+    map.getViewport().addEventListener('mouseout', function(evt) {
+      selectedHoverFeatures.clear();
+    }, false);
+
+    franceSource.once('change', function(e) {
+      if (franceSource.getState() === 'ready') {
+        franceSource.forEachFeature(function(f) {
+          if (f.get('ID_TILE') === 5) {
+            selectedFeatures.push(f);
+            map.getView().fit(f.getGeometry().getExtent(), map.getSize());
+            getPoints(5);
+
+            return true;
+          }
+        })
+      }
+    });
+
+    function getPoints(id) {
+      $.get("data/geojson/point-samples-" + id + ".geojson", function(data) {
+        overlays = data.features.map(function(feature) {
+          var marker = new ol.Overlay({
+            position: ol.proj.fromLonLat(feature.geometry.coordinates),
+            positioning: 'center-center',
+            element: $('<div class="marker" title="' + feature.properties.name + '"> <div class="marker-content"> <div class="marker-measurement"> 10</div> <p class="marker-title">' + feature.properties.name + '</p></div>   </div>')
+              .on('click', function(e) {
+                var title = $(this).find('.marker-title');
+                title.toggle();
+              }),
+            stopEvent: true
+          });
+
+          map.addOverlay(marker);
+
+          return marker;
         });
+      });
+    }
+
+    function selectFeature() {
+
+    }
+
+
+    function clearMakers() {
+      overlays.forEach(function(layer) {
+        map.removeOverlay(layer);
+      });
     }
   </script>
 </body>

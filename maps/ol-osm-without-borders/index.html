@@ -127,8 +127,8 @@
     function boderStyles() {
       return new ol.style.Style({
         stroke: new ol.style.Stroke({
-          color: '#969696',
-          width: 1
+          color: 'transparent',
+          width: 0
         })
       });
     }
@@ -181,13 +181,9 @@
       layers: [
         new ol.layer.Tile({
           source: new ol.source.OSM({
-            url: '//{a-c}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png',
             attributions: [
-              new ol.Attribution({
-                html: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              })
-            ],
-            crossOrigin: null
+              ol.source.OSM.ATTRIBUTION
+            ]
           })
         }),
         france

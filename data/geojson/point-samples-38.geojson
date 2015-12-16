@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+
+  "features": [{
+    "type": "Feature",
+    "properties": {
+      "name": "Mens"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.7189282, 44.8117015]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "La Morte"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.849488, 45.0269695]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Voreppe"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.6067126, 45.2861749]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Eydoche"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.3267452, 45.4439297]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Septème"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [4.9706379, 45.5513977]
+    }
+  }]
+}

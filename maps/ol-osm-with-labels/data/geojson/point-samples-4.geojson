@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+
+  "features": [{
+    "type": "Feature",
+    "properties": {
+      "name": "Authon"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.1091952, 44.2475666]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Draix"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.3575183, 44.1331765]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Mallemoisson"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.1113542, 44.0431716]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Valbelle"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.8578359, 44.1400839]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Enchastrayes"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.6779017, 44.368488]
+    }
+  }]
+}
