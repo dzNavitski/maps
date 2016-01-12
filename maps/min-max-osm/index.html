@@ -1,80 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.12.1/ol.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.2.1/nouislider.min.css">
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.12.1/ol.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.2.1/nouislider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
 
-	<style type="text/css" media="screen">
-		#map {
-			width: 650px;
-			height: 600px;
-			margin: 150px auto;
-		}
-
-		.leaflet-image-layer {
-			z-index: 99;
-		}
-	</style>
+  <style type="text/css" media="screen">
+    @font-face {
+      font-family: "Flaticon";
+      src: url("assets/fonts/flaticon.eot");
+      src: url("assets/fonts/flaticon.eot#iefix") format("embedded-opentype"), url("assets/fonts/flaticon.woff") format("woff"), url("assets/fonts/flaticon.ttf") format("truetype"), url("assets/fonts/flaticon.svg") format("svg");
+      font-weight: normal;
+      font-style: normal;
+    }
+    [class^="flaticon-"]:before,
+    [class*=" flaticon-"]:before,
+    [class^="flaticon-"]:after,
+    [class*=" flaticon-"]:after {
+      font-family: Flaticon;
+      font-size: 14px;
+      font-weight: 400;
+      font-style: normal;
+    }
+    button:focus {
+      outline: none;
+    }
+    .flaticon-refresh:before {
+      content: "\e000";
+    }
+    .flaticon-pause:before {
+      content: "\e001";
+    }
+    .flaticon-play:before {
+      content: "\e002";
+    }
+    .flaticon-next:before {
+      content: "\e003";
+    }
+    .flaticon-previous:before {
+      content: "\e004";
+    }
+    .flaticon-repeat:before {
+      content: "\e005";
+    }
+    .flaticon-save:before {
+      content: "\e006";
+    }
+    .flaticon-speed:before {
+      content: "\e007";
+    }
+    .flaticon-stop:before {
+      content: "\e008";
+    }
+    #map {
+      width: 630px;
+      height: 600px;
+      margin: 150px auto 0;
+    }
+    .leaflet-image-layer {
+      z-index: 99;
+    }
+    .time-slider {
+      width: 630px;
+      margin: 0 auto;
+      padding: 20px 20px;
+      box-sizing: border-box;
+      background: #f7f7f7;
+    }
+    .forecast-subset:after,
+    .time-slider__controls-holder:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .forecast-subset:before,
+    .time-slider__controls-holder:before {
+      content: "";
+      display: table;
+    }
+    .forecast-subset:after,
+    .time-slider__controls-holder:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .forecast-subset:before,
+    .time-slider__controls-holder:before {
+      content: "";
+      display: table;
+    }
+    .time-slider__timeline-holder .noUi-handle:before,
+    .time-slider__timeline-holder .noUi-handle:after {
+      display: none;
+    }
+    .time-slider__timeline-holder .noUi-origin {
+      z-index: 7;
+    }
+    .time-slider__timeline-holder .noUi-origin .noUi-handle {
+      width: 22px;
+      height: 22px;
+      left: -11px;
+      top: -3.5px;
+      border-radius: 50%;
+    }
+    .time-slider__timeline-holder .noUi-background {
+      background: #d3d3d3;
+      box-shadow: none;
+    }
+    .time-slider__timeline-holder .noUi-base:hover .noUi-tooltip {
+      display: block;
+    }
+    .time-slider__timeline-holder .noUi-base:before,
+    .time-slider__timeline-holder .noUi-base:after {
+      content: '';
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      z-index: 5;
+      background: #fff;
+    }
+    .time-slider__timeline-holder .noUi-base:before {
+      left: 0;
+      border-radius: 8px 0 0 8px;
+      opacity: 0.5;
+    }
+    .time-slider__timeline-holder .noUi-base:after {
+      right: 0;
+      border-radius: 0 8px 8px 0;
+      opacity: 0.25;
+    }
+    .time-slider__timeline-holder .noUi-connect {
+      transition: none !important;
+    }
+    .time-slider__timeline-holder .noUi-state-tap .noUi-origin {
+      transition: none !important;
+    }
+    .time-slider__timeline-holder .noUi-tooltip {
+      display: none;
+      top: -28px;
+      left: 50%;
+      -webkit-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .time-slider__timeline {
+      height: 15px;
+      border: none;
+      border-radius: 8px;
+    }
+    .time-slider__timeline-progress {
+      height: 100%;
+      position: absolute;
+      left: 0;
+      z-index: 3;
+      border-radius: 8px;
+      background: #98bc35;
+    }
+    .time-slider__controls-holder {
+      margin: 15px 0 0;
+      text-align: center;
+    }
+    .time-slider__controls {
+      float: left;
+    }
+    .time-slider__info-holder {
+      display: inline-block;
+      position: absolute;
+      left: 50%;
+      -webkit-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+      vertical-align: middle;
+    }
+    .time-slider__speed {
+      float: right;
+      position: relative;
+      z-index: 10;
+    }
+    .time-slider__speed:hover .time-slider__speed-slider-holder {
+      display: block;
+    }
+    .time-slider__speed-slider-holder {
+      display: none;
+      padding: 7.5px 5px;
+      position: absolute;
+      top: 5px;
+      -webkit-transform: translate(-50%, -100%);
+      transform: translate(-50%, -100%);
+      left: 50%;
+      background: #f7f7f7;
+      border: 1px solid #d4d4d4;
+    }
+    .time-slider__speed-slider-holder .noUi-handle:before,
+    .time-slider__speed-slider-holder .noUi-handle:after {
+      display: none;
+    }
+    .time-slider__speed-slider-holder .noUi-origin {
+      z-index: 5;
+    }
+    .time-slider__speed-slider-holder .noUi-origin .noUi-handle {
+      width: 12px;
+      height: 12px;
+      left: -2px;
+      top: -6px;
+      border-radius: 50%;
+    }
+    .time-slider__speed-slider-holder .noUi-connect {
+      box-shadow: none;
+      background: #ccde9a;
+    }
+    .time-slider__speed-slider {
+      position: relative;
+      width: 10px;
+      height: 100px;
+    }
+    .time-slider__info {
+      display: inline-block;
+      padding: 0 15px;
+      border: 1px solid #a2a2a2;
+      border-radius: 13px;
+      line-height: 25px;
+      vertical-align: middle;
+    }
+    .time-slider__btn {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      padding: 5px;
+      box-sizing: border-box;
+      position: relative;
+      background: none;
+      border: none;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .time-slider__btn:before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      line-height: 1;
+    }
+    .time-slider__btn_speed:before {
+      font-size: 20px;
+    }
+    .time-slider__btn_repeat {
+      float: right;
+      margin-right: 10px;
+      color: #969696;
+    }
+    .time-slider__btn_repeat:before {
+      font-size: 18px;
+    }
+    .time-slider__btn_repeat_active {
+      color: #000;
+    }
+    .time-slider__btn_play_active:before {
+      content: "\e001";
+    }
+  </style>
 </head>
+
 <body>
-	<div id="map"></div>
+  <div id="map"></div>
+  <div class="time-slider">
+    <div class="time-slider__timeline-holder">
+      <div class="time-slider__timeline"></div>
+    </div>
 
-	<script type="text/javascript" charset="utf-8" >
-		var map = L.map('map', {
-			    center: [47, 2.5],
-			    zoom: 5,
-			    minZoom: 5,
-			    maxZoom: 9,
-			    maxBounds: [[39.4700000, -9.9600000], [53.6700000, 14.6400000]]
-			});
-		var imageUrl = 'http://dznavitski.github.io/maps/img/radar_prog-fr_20151215_0950.png';
-    	var imageBounds = [[39.4700000, -9.9600000], [53.6700000, 14.6400000]];
+    <div class="time-slider__controls-holder">
+      <div class="time-slider__controls">
+        <button title="Marche" class="time-slider__btn time-slider__btn_play flaticon-play"></button>
+        <button title="Arrêtez" class="time-slider__btn time-slider__btn_stop flaticon-stop"></button>
 
-    	var francePoly = L.geoJson(null, {
-			style: franceStyle
-		});
+      </div>
+
+      <div class="time-slider__speed">
+        <button title="Vitesse" class="time-slider__btn time-slider__btn_speed flaticon-speed"></button>
+        <div class="time-slider__speed-slider-holder">
+          <div class="time-slider__speed-slider"></div>
+        </div>
+      </div>
+      <button title="Répéter" class="time-slider__btn time-slider__btn_repeat flaticon-repeat"></button>
+
+      <div class="time-slider__info-holder">
+        <button title="Précédent" class="time-slider__btn time-slider__btn_prev flaticon-previous"></button>
+        <div class="time-slider__info">
+          11/01/2015 2:26
+        </div>
+        <button title="Suivant" class="time-slider__btn time-slider__btn_next flaticon-next"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" charset="utf-8">
+    // var map = L.map('map', {
+    // 	    center: [47, 2.5],
+    // 	    zoom: 5,
+    // 	    minZoom: 5,
+    // 	    maxZoom: 9,
+    // 	    maxBounds: [[39.4700000, -9.9600000], [53.6700000, 14.6400000]]
+    // 	});
+    // var imageUrl = 'http://dznavitski.github.io/maps/img/radar_prog-fr_20151215_0950.png';
+    //   	var imageBounds = [[39.4700000, -9.9600000], [53.6700000, 14.6400000]];
+
+    //   	var francePoly = L.geoJson(null, {
+    // 	style: franceStyle
+    // });
 
 
-		L.tileLayer('http://api.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/{z}/{x}/{y}.png', {
-		    maxZoom: 6,
-		    attribution: 'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		}).addTo(map);
+    // L.tileLayer('http://api.mapbox.com/v3/mapbox.natural-earth-hypso-bathy/{z}/{x}/{y}.png', {
+    //     maxZoom: 6,
+    //     attribution: 'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    // }).addTo(map);
 
-		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-		    maxZoom: 18,
-		    minZoom: 7
-		}).addTo(map);
+    // L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    //     maxZoom: 18,
+    //     minZoom: 7
+    // }).addTo(map);
 
-		L.imageOverlay(imageUrl, imageBounds).addTo(map);
+    // L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
-		omnivore.topojson('data/topojson/poly.topojson', null, francePoly).addTo(map);
+    // omnivore.topojson('data/topojson/poly.topojson', null, francePoly).addTo(map);
 
-		function franceStyle(feature) {
-			return {
-				stroke: true,
-				weight: 1,
-				color: 'rgba(255,255,255,1)',
-				fill: true,
-				fillColor: 'rgba(151,199,55,1)',
-				fillOpacity: 0.9,
-				opacity: 1
-			};
-		}
+    // function franceStyle(feature) {
+    // 	return {
+    // 		stroke: true,
+    // 		weight: 1,
+    // 		color: 'rgba(255,255,255,1)',
+    // 		fill: true,
+    // 		fillColor: 'rgba(151,199,55,1)',
+    // 		fillOpacity: 0.9,
+    // 		opacity: 1
+    // 	};
+    // }
 
-		map.on('zoomend', onZoomend);
+    // map.on('zoomend', onZoomend);
 
-		function onZoomend(){
-		    if (map.getZoom() >= 7) {
-		     	map.removeLayer(francePoly);
-		    }
+    // function onZoomend(){
+    //     if (map.getZoom() >= 7) {
+    //      	map.removeLayer(francePoly);
+    //     }
 
-		    if (map.getZoom() < 7) {
-		    	map.addLayer(francePoly);
-		  	};
-		};
-	</script>
+    //     if (map.getZoom() < 7) {
+    //     	map.addLayer(francePoly);
+    //   	};
+    // };
+
+    var extent = [-8.266, 40.022, 11.529, 53.516];
+    var maxExtent = ol.extent.applyTransform(extent, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+    var mapbox = new ol.layer.Tile({
+      source: new ol.source.TileJSON({
+        url: 'http://api.tiles.mapbox.com/v3/mapbox.natural-earth-hypso-bathy.jsonp',
+        crossOrigin: 'anonymous',
+        attributions: [
+          new ol.Attribution({
+            html: 'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          })
+        ]
+      })
+    });
+    var osm = new ol.layer.Tile({
+      source: new ol.source.OSM({
+        attributions: [
+          ol.source.OSM.ATTRIBUTION
+        ]
+      })
+    });
+    var france = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/topojson/poly.topojson',
+        format: new ol.format.TopoJSON(),
+      }),
+      renderBuffer: '630',
+      style: francePolyStyle()
+    });
+    var view = new ol.View({
+      center: ol.proj.fromLonLat([2.103343232935574, 47.066283603329396]),
+      zoom: 5,
+      minZoom: 5,
+      maxZoom: 9,
+      extent: maxExtent
+    });
+
+    var staticImgL = new ol.layer.Image({
+      source: new ol.source.ImageStatic({
+        url: 'http://dznavitski.github.io/maps/img/radar.png',
+        imageExtent: maxExtent
+      })
+    });
+
+    mapbox.setMinResolution(2000);
+    mapbox.setMaxResolution(20000);
+    osm.setMinResolution(200);
+    osm.setMaxResolution(2000);
+    france.setMinResolution(2000);
+    france.setMaxResolution(20000);
+
+    map = new ol.Map({
+      target: 'map',
+      layers: [
+        osm,
+        mapbox,
+        france,
+        staticImgL
+      ],
+      view: view
+    });
+
+    function francePolyStyle() {
+      return new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: 'rgba(255, 255, 255, 1)',
+          width: 1.1
+        }),
+        fill: new ol.style.Stroke({
+          color: 'rgba(151, 199, 55, 0.85)'
+        })
+      });
+    }
+
+    var selectors = {
+      timeline: '.time-slider__timeline',
+      timelineProgress: '.time-slider__timeline-progress',
+      speedSlider: '.time-slider__speed-slider',
+      btnRepeat: '.time-slider__btn_repeat',
+      btnRepeatActive: '.time-slider__btn_repeat_active',
+      btnPlay: '.time-slider__btn_play',
+      btnPlayActive: '.time-slider__btn_play_active'
+    };
+
+    var selectorsName = {
+      timelineProgress: 'time-slider__timeline-progress',
+      btnRepeatActive: 'time-slider__btn_repeat_active',
+      btnPlayActive: 'time-slider__btn_play_active'
+    };
+
+    var text = {
+      play: 'Marche',
+      pause: 'Pause'
+    };
+
+    var playingProgress = 0;
+    var range = [0, 100];
+
+    var el = document.querySelectorAll('.time-slider')[0];
+
+    var slider = el.querySelectorAll(selectors.timeline);
+    var speedSlider = el.querySelectorAll(selectors.speedSlider);
+    var repeatBtn = el.querySelectorAll(selectors.btnRepeat);
+    var playBtn = el.querySelectorAll(selectors.btnPlay);
+
+    noUiSlider.create(slider[0], {
+      start: 0,
+      animate: false,
+      tooltips: {
+        to: function(value) {
+          var val = Math.round(value);
+          if (val !== undefined && val !== false) {
+            return moment(1452583444225).format('YYYY-M-D H:mm');
+          }
+        },
+        from: function(value) {
+          var val = Math.round(value);
+          if (val !== undefined && val !== false) {
+            return moment(1452583444225).format('YYYY-M-D H:mm');
+          }
+        }
+      },
+      range: {
+        min: 0,
+        max: 100
+      }
+    });
+
+    noUiSlider.create(speedSlider[0], {
+      start: 40,
+      orientation: 'vertical',
+      connect: 'lower',
+      direction: 'rtl',
+      range: {
+        min: 0,
+        max: 100
+      }
+    });
+
+    appendProgress();
+
+    repeatBtn[0].addEventListener('click', function() {
+      repeatBtn[0].classList.toggle(selectorsName.btnRepeatActive);
+    });
+
+    playBtn[0].addEventListener('click', function() {
+      playBtn[0].classList.toggle(selectorsName.btnPlayActive);
+
+      if (playBtn[0].classList.contains(selectorsName.btnPlayActive)) {
+        playBtn[0].title = text.pause;
+      } else {
+        playBtn[0].title = text.play;
+      }
+    });
+
+    slider[0].noUiSlider.on('update', function(values, handle, unencoded, tap) {
+      var value = +values[handle];
+      var target = range[1];
+      var progress = slider[0].querySelectorAll(selectors.timelineProgress)[0];
+
+      playingProgress = value / target * 100;
+      progress.style.width = playingProgress + '%';
+
+      //console.log(Math.round(+values[handle]));
+      // console.log(new Date(+values[handle]));
+    });
+
+    function appendProgress() {
+      var noUIBase = slider[0].querySelectorAll('.noUi-base');
+      var progress = document.createElement('div');
+      progress.className = selectorsName.timelineProgress;
+      noUIBase[0].appendChild(progress);
+    }
+  </script>
 </body>
+
 </html>
