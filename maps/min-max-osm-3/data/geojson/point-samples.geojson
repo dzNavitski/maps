@@ -1,0 +1,92 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+
+  "features": [{
+    "type": "Feature",
+    "properties": {
+      "name": "Veynes"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.6882768, 44.5423418]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Chabestan"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.7656019, 44.4791373]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Manteyer"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.9202837, 44.5312913]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Les Orres"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.5423917, 44.4883868]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "L'Argentière-la-Bessée"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.4365607, 44.7835431]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Laye"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.051662, 44.6445202]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Orcières"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.283118, 44.6850026]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Ceillac"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.7721707, 44.6544277]
+    }
+  }, {
+    "type": "Feature",
+    "properties": {
+      "name": "Lazer"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [5.8159337, 44.3488745]
+    }
+  }]
+}
