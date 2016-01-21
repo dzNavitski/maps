@@ -154,11 +154,12 @@
     }
     .time-slider__timeline-holder .noUi-tooltip {
       display: none;
-      top: -28px;
+      padding: 5px;
+      top: -34px;
       left: 50%;
       -webkit-transform: translate(-50%, 0);
       transform: translate(-50%, 0);
-      font-size: 12px;
+      font-size: 16px;
       white-space: nowrap;
     }
     .time-slider__timeline {
@@ -215,13 +216,17 @@
       display: none;
     }
     .time-slider__speed-slider-holder .noUi-origin {
+      border-radius: 10px;
       z-index: 5;
     }
     .time-slider__speed-slider-holder .noUi-origin .noUi-handle {
-      width: 22px;
-      height: 22px;
-      left: -4.5px;
-      top: -10px;
+      width: 27px;
+      height: 27px;
+      position: absolute;
+      left: 50%;
+      top: -13.5px;
+      -webkit-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
       border-radius: 50%;
     }
     .time-slider__speed-slider-holder .noUi-connect {
@@ -230,16 +235,16 @@
     }
     .time-slider__speed-slider {
       position: relative;
-      width: 15px;
+      width: 20px;
       height: 100px;
     }
 
     .time-slider__speed-slider.noUi-target {
-      border-radius: 8px;
+      border-radius: 10px;
     }
     .time-slider__info {
       display: inline-block;
-      padding: 0 15px;
+      padding: 0 25px;
       border: 1px solid #e0e0e0;
       font-size: 18px;
       line-height: 45px;
